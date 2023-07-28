@@ -9,6 +9,7 @@ import { Music } from "./music/music";
 import { QueueProvider } from "../queueManager";
 import { useContext, useEffect } from 'react';
 import { SocketContext } from '../socket_connection/socket';
+import { Installer } from './installer/installer';
 
 const darkTheme = createTheme({
   palette: {
@@ -41,7 +42,7 @@ export const Main = () => {
             <Routes>
               <Route element={<Music />} path="/" />
               <Route element={<Music />} path="/music" />
-              <Route element={<></>} path="/test2" />
+              <Route element={<Installer />} path="/installation" />
               <Route element={<></>} path="/test3" />
               <Route element={<></>} path="/test4" />
               <Route element={<></>} path="/test5" />

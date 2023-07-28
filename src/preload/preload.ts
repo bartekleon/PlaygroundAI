@@ -8,6 +8,9 @@ const safeIPC = (eventName: string) => <T>(callback: (_: IPCEvent, value: T) => 
 
 const api = {
   testInstallations: (): Promise<TInstallations> => IPC.invoke('testInstallations'),
+  installPython: (): Promise<string> => IPC.invoke('installPython'),
+  installPipenv: (): Promise<string> => IPC.invoke('installPipenv'),
+  installServer: (): Promise<string> => IPC.invoke('installServer'),
 }
 
 //window.api = api;

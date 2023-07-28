@@ -1,6 +1,8 @@
 import { exec } from 'child_process';
-import { TInstallationState } from 'interfaces/installations';
 import { promisify } from 'util';
+import path from 'path';
+
+import { TInstallationState, TInstallations } from 'interfaces/installations';
 
 const promisedExec = promisify(exec);
 const commandAvailable = (command: string) => promisedExec(command)
@@ -12,11 +14,12 @@ const packagesInstalled = (command: string) => promisedExec(command)
   .catch(() => TInstallationState.NotInstalled);
 
 const runCommand = (command: string) => promisedExec(command)
-  .then(({ stderr }) => stderr ? `Error: ${stderr}` : "Success")
+  .then(({ stderr }) => stderr ? `Error: ${stderr}` : "success")
   .catch(err => `Error: ${err}`);
 
 export const installPython = () => {
-  return runCommand(`./bin/python-3.10.0-amd64.exe /quiet PrependPath=1 Shortcuts=0 Include_doc=0 Include_test=0`);
+  const installer_path = path.join(__dirname, './bin/python-3.10.0-amd64.exe');
+  return runCommand(`${installer_path} /quiet PrependPath=1 Shortcuts=0 Include_doc=0 Include_test=0`);
 }
 
 export const installPipenv = () => {
@@ -45,7 +48,9 @@ export const checkDiffusersRequirements = () => {
   return packagesInstalled(REQUIREMENTS_PATH('test_torch'));
 }
 
-export const determineInstallation = async () => {
+export const determineInstallation = async (): Promise<TInstallations> => {
+  const has_python = await commandAvailable("python --version");
+
   const has_pip = await commandAvailable("pip");
 
   const has_pipenv = await commandAvailable("pipenv");
@@ -63,6 +68,7 @@ export const determineInstallation = async () => {
   }
 
   return {
+    has_python,
     has_pip,
     has_pipenv,
     has_server,

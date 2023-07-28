@@ -6,6 +6,11 @@ export enum TInstallationState {
 }
 
 export interface TInstallations {
-  has_pip: TInstallationState
-  has_pipenv: TInstallationState
+  has_python: TInstallationState;
+  has_pip: TInstallationState;
+  has_pipenv: TInstallationState;
+  has_server: TInstallationState;
+  has_basic: TInstallationState;
+  has_music: TInstallationState;
+  has_diffusers: TInstallationState;
 }

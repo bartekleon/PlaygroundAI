@@ -12,33 +12,36 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
 import TuneIcon from '@mui/icons-material/Tune';
 import { AppBar, Drawer, DrawerHeader } from './drawer';
+import { Link } from 'react-router-dom';
 
-const MiniDrawerListItem = ({ open, icon, text } : { open: boolean, icon: React.ReactNode, text: string }) => {
+const MiniDrawerListItem = (
+  { open, icon, text, link } : { open: boolean, icon: React.ReactNode, text: string, link: string }
+) => {
   return (
-    <ListItem disablePadding sx={{ display: 'block' }}>
-      <ListItemButton
-        sx={{
-          minHeight: 48,
-          justifyContent: open ? 'initial' : 'center',
-          px: 2.5,
-        }}
-      >
-        <ListItemIcon
+    <Link to={link}>
+      <ListItem disablePadding sx={{ display: 'block' }}>
+        <ListItemButton
           sx={{
-            minWidth: 0,
-            mr: open ? 3 : 'auto',
-            justifyContent: 'center',
+            minHeight: 48,
+            justifyContent: open ? 'initial' : 'center',
+            px: 2.5,
           }}
         >
-          {icon}
-        </ListItemIcon>
-        <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-      </ListItemButton>
-    </ListItem>
+          <ListItemIcon
+            sx={{
+              minWidth: 0,
+              mr: open ? 3 : 'auto',
+              justifyContent: 'center',
+            }}
+          >
+            {icon}
+          </ListItemIcon>
+          <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+        </ListItemButton>
+      </ListItem>
+    </Link>
   );
 }
 
@@ -79,17 +82,12 @@ export const MiniDrawer = () => {
         </DrawerHeader>
         <Divider />
         <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <MiniDrawerListItem
-              key={text}
-              open={open}
-              icon={index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              text={text} />
-          ))}
+          <MiniDrawerListItem open={open} icon={<TuneIcon />} text='music' link='/music' />
+          <MiniDrawerListItem open={open} icon={<TuneIcon />} text='installlation' link='/installation' />
         </List>
         <Divider />
         <List>
-          <MiniDrawerListItem open={open} icon={<TuneIcon />} text='settings' />   
+          <MiniDrawerListItem open={open} icon={<TuneIcon />} text='settings' link='/settings' />
         </List>
       </Drawer>
     </>
