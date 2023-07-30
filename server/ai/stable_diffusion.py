@@ -1,43 +1,43 @@
-from diffusers import DiffusionPipeline
+from typing import cast
+
+from diffusers import StableDiffusionPipeline
+from diffusers.pipelines.stable_diffusion import StableDiffusionPipelineOutput
 import torch
 
-base = DiffusionPipeline.from_pretrained(
-  "stabilityai/stable-diffusion-xl-base-1.0",
-  torch_dtype=torch.float16,
-  variant="fp16",
-  use_safetensors=True
+from server.ai.base import AIBase
+
+model = ""
+prompt = ""
+steps = 50
+image_name = ""
+
+generator = cast(
+  StableDiffusionPipeline,
+  StableDiffusionPipeline.from_single_file(
+    model,
+    load_safety_checker=False,
+    torch_dtype=torch.float16
+  )
 )
-base.to("cuda")
-refiner = DiffusionPipeline.from_pretrained(
-  "stabilityai/stable-diffusion-xl-refiner-1.0",
-  text_encoder_2=base.text_encoder_2,
-  vae=base.vae,
-  torch_dtype=torch.float16,
-  use_safetensors=True,
-  variant="fp16",
-)
-refiner.to("cuda")
 
-base.unet = torch.compile(base.unet, mode="reduce-overhead", fullgraph=True)
-refiner.unet = torch.compile(refiner.unet, mode="reduce-overhead", fullgraph=True)
+generator.to("cuda")
 
-prompt = "Beautiful anime girl in armour"
+image = cast(StableDiffusionPipelineOutput, generator(
+  prompt,
+  num_inference_steps=steps,
+)).images[0]
 
-n_steps = 40
-high_noise_frac = 0.8
+image.save(image_name)
 
-image = base(
-  prompt=prompt,
-  num_inference_steps=n_steps,
-  denoising_end=high_noise_frac,
-  output_type="latent",
-).images
+class StableDiffusion(AIBase):
+  def destroy(self):
+    pass
+  
+  def generate(self):
+    pass
 
-image = refiner(
-  prompt=prompt,
-  num_inference_steps=n_steps,
-  denoising_start=high_noise_frac,
-  image=image,
-).images[0]
-print('hello')
-image.save("character.png")
+  @staticmethod
+  def progress():
+    pass
+
+stableDiffusion = StableDiffusion()
