@@ -25,13 +25,10 @@ export const Installer = () => {
     }, []);
 
     const installPython = useCallback(async () => {
-        console.log(installations)
         if (installations.has_python === TInstallationState.Installed) return;
 
-        console.log({ ...installations, has_python: TInstallationState.Installing })
         setInstallations({ ...installations, has_python: TInstallationState.Installing })
         const response = await window.api.installPython()
-        console.log(response)
         if (response === 'success') {
             setInstallations({ ...installations, has_python: TInstallationState.Installed })
         } else {
