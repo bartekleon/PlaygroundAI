@@ -7,9 +7,10 @@ import { MiniDrawer } from "./menu/menu";
 import { DrawerHeader } from "./menu/drawer";
 import { Music } from "./music/music";
 import { QueueProvider } from "../queueManager";
+import { Installer } from './installer/installer';
+import { ProgressBar } from './progressbar/progressbar';
 import { useContext, useEffect } from 'react';
 import { SocketContext } from '../socket_connection/socket';
-import { Installer } from './installer/installer';
 
 const darkTheme = createTheme({
   palette: {
@@ -21,13 +22,15 @@ export const Main = () => {
   const socket = useContext(SocketContext)
 
   useEffect(() => {
-    const getProgress = (data) => {
-      console.log(data);
+    const getProgress = (event: string, args: unknown[]) => {
+      console.log(event, args);
     }
-    socket.on('get_progress', getProgress)
+    socket.onAny(getProgress)
+    socket.onAnyOutgoing(getProgress)
 
     return () => {
-      socket.off('get_progress', getProgress)
+      socket.offAny(getProgress)
+      socket.offAnyOutgoing(getProgress)
     }
   }, [socket])
 
@@ -49,6 +52,7 @@ export const Main = () => {
               <Route element={<></>} path="/test6" />
             </Routes>
           </QueueProvider>
+          <ProgressBar />
         </Box>
       </Box>
     </ThemeProvider>

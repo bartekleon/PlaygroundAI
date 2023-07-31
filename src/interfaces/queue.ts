@@ -1,6 +1,6 @@
 type Path = string;
 
-export type TMusicVariant = "unconditioned" | "textToMusic" | "musicTextToMusic" | "musicContinuation";
+export type TMusicVariant = "unconditioned" | "textToMusic" | "musicToMusic" | "musicContinuation";
 
 export interface TMusicElement {
   type: 'music';

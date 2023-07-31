@@ -3,7 +3,7 @@ import { spawn, ChildProcessWithoutNullStreams, execSync } from 'child_process';
 let server: ChildProcessWithoutNullStreams | null = null;
 
 export const startServer = () => {
-  server = spawn('pipenv run python ./server/server.py', { detached: true, shell: true });
+  server = spawn('pipenv run python ./server.py', { detached: true, shell: true });
 
   server.stdout.on('data', data => {
     console.log(`Got some data : ${data}`)

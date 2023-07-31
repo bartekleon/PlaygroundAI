@@ -18,7 +18,7 @@ import { QueueContext } from '../../queueManager';
 const variants: Record<TMusicVariant, string>  = {
   unconditioned: "Unconditioned Music Generation",
   textToMusic: "Text to Music",
-  musicTextToMusic: "Music + Text to Music",
+  musicToMusic: "Music + Text to Music",
   musicContinuation: "Music Continuation",
 }
 
@@ -47,7 +47,7 @@ export const Music = () => {
   const handlePromptChange = (event: TInputChangeEvent) => setPrompt(event.target.value);
 
   const handleFileChange = (event: TInputChangeEvent) => {
-    if (event.target.files) {
+    if (event.target.files && event.target.files[0]) {
       setAudioPath(event.target.files[0].path);
     }
   };
@@ -62,7 +62,7 @@ export const Music = () => {
     })
   }, [variant, audio_length, prompt, audio_path]);
 
-  const isMusicVariant = variant === 'musicContinuation' || variant === 'musicTextToMusic';
+  const isMusicVariant = variant === 'musicContinuation' || variant === 'musicToMusic';
 
   return (
     <Container>

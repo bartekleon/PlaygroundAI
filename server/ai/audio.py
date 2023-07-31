@@ -1,20 +1,21 @@
-from typing import Tuple, Literal, TypedDict, List
+from typing import Tuple, Literal, TypedDict, Callable, Dict
 from enum import Enum
 from pathlib import Path
-import re
 
-from flask_socketio import SocketIO
 from torch import Tensor
 import torchaudio
+from flask_socketio import SocketIO
 
 from server.ai.base import AIBase
+from server.utils.generate_filename import generate_filename
 
 try:
-  from audiocraft.models.musicgen import MusicGen
+  from server.patches.patched_music_gen import PatchedMusicGen
   from audiocraft.data.audio import audio_write
-  import secrets
   _supports_audio_ai = True
-except ImportError:
+  
+except ImportError as exc:
+  print(exc)
   _supports_audio_ai = False
 
 class MusicVariant(str, Enum):
@@ -31,8 +32,9 @@ class MusicElement(TypedDict):
   prompt: str
 
 class AudioAI(AIBase):
-  def __init__(self):
-    self.model: MusicGen | None = None
+  def __init__(self, socket: SocketIO):
+    self.model: PatchedMusicGen | None = None
+    self.socket = socket
     
   def destroy(self):
     self.model = None
@@ -69,14 +71,13 @@ class AudioAI(AIBase):
       True
     )
 
-  def _save_audio(self, wav: Tensor, descriptions: List[str]):
+  def _save_audio(self, wav: Tensor, prompt: str):
     assert self.model
-    for idx, one_wav in enumerate(wav):
-      name = f'{secrets.token_hex(4)}_{descriptions[idx]}'
-      audio_write(name, one_wav.cpu(), self.model.sample_rate, strategy="peak")
+    for _, one_wav in enumerate(wav):
+      audio_write(generate_filename(prompt), one_wav.cpu(), self.model.sample_rate, strategy="peak")
 
   def _generate(self, settings: MusicElement):
-    variant_to_func = {
+    variant_to_func: Dict[MusicVariant, Callable[[MusicElement], Tensor]] = {
       MusicVariant.UNCONDITIONED: self._generate_unconditional,
       MusicVariant.TEXT_TO_MUSIC: self._generate_conditional,
       MusicVariant.MUSIC_TO_MUSIC: self._generate_music_to_music,
@@ -94,32 +95,9 @@ class AudioAI(AIBase):
       return # TODO HANDLE PROPERLY
 
     if self.model is None:
-      self.model = MusicGen.get_pretrained('melody')
+      self.model = PatchedMusicGen.get_pretrained(self.socket, 'melody')
     self.model.set_generation_params(duration=settings['audio_length'])
     
     audio = self._generate(settings)
     
-    self._save_audio(audio, [settings['prompt']])
-
-  @staticmethod
-  def extract_tokens(text: str):
-    match = re.search(r'(\d+) +\/ +(\d+)', text)
-    if match:
-      generated_tokens, tokens_to_generate = map(int, match.groups())
-      return generated_tokens, tokens_to_generate
-    return None, None
-
-  @staticmethod
-  def progress(socket: SocketIO, text: str):
-    # print(f'{generated_tokens: 6d} / {tokens_to_generate: 6d}', end='\r')
-    if 'OutOfMemoryError' in text:
-      socket.emit('status', 'Cuda Out of Memory Error')
-    else:
-      start, end = AudioAI.extract_tokens(text)
-      if start is not None and end is not None:
-        percentage = start / end * 100
-        socket.emit('get_progress', { 'start': start, 'end': end, 'percentage': percentage })
-
-    return text
-  
-audioAI = AudioAI()
+    self._save_audio(audio, settings['prompt'])
