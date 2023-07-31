@@ -11,6 +11,7 @@ import { Installer } from './installer/installer';
 import { ProgressBar } from './progressbar/progressbar';
 import { useContext, useEffect } from 'react';
 import { SocketContext } from '../socket_connection/socket';
+import { SnackbarProvider, enqueueSnackbar } from 'notistack';
 
 const darkTheme = createTheme({
   palette: {
@@ -18,21 +19,41 @@ const darkTheme = createTheme({
   },
 });
 
+const DEBUG = true;
+
 export const Main = () => {
-  const socket = useContext(SocketContext)
+  const socket = useContext(SocketContext);
 
   useEffect(() => {
-    const getProgress = (event: string, args: unknown[]) => {
+    const getAny = (event: string, args: unknown[]) => {
       console.log(event, args);
     }
-    socket.onAny(getProgress)
-    socket.onAnyOutgoing(getProgress)
+    const getError = (event: string, args: unknown[]) => {
+      console.log(event, args);
+    }
+    const modelStatusChange = (data: { status: string }) => {
+      enqueueSnackbar({
+        message: data.status,
+        variant: 'info',
+      });
+    }
+
+    socket.on('error', getError);
+    socket.on('model_status_change', modelStatusChange);
+    if (DEBUG) {
+      socket.onAny(getAny);
+      socket.onAnyOutgoing(getAny);
+    }
 
     return () => {
-      socket.offAny(getProgress)
-      socket.offAnyOutgoing(getProgress)
+      socket.off('model_status_change', modelStatusChange)
+      socket.off('error', getError)
+      if (DEBUG) {
+        socket.offAny(getAny);
+        socket.offAnyOutgoing(getAny)
+      }
     }
-  }, [socket])
+  }, [socket, enqueueSnackbar])
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -42,15 +63,17 @@ export const Main = () => {
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <DrawerHeader />
           <QueueProvider>
-            <Routes>
-              <Route element={<Music />} path="/" />
-              <Route element={<Music />} path="/music" />
-              <Route element={<Installer />} path="/installation" />
-              <Route element={<></>} path="/test3" />
-              <Route element={<></>} path="/test4" />
-              <Route element={<></>} path="/test5" />
-              <Route element={<></>} path="/test6" />
-            </Routes>
+            <SnackbarProvider maxSnack={5}>
+              <Routes>
+                <Route element={<Music />} path="/" />
+                <Route element={<Music />} path="/music" />
+                <Route element={<Installer />} path="/installation" />
+                <Route element={<></>} path="/test3" />
+                <Route element={<></>} path="/test4" />
+                <Route element={<></>} path="/test5" />
+                <Route element={<></>} path="/test6" />
+              </Routes>
+            </SnackbarProvider>
           </QueueProvider>
           <ProgressBar />
         </Box>

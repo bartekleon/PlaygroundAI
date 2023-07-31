@@ -14,6 +14,7 @@ import { useLocalStorage } from '../../utils/useLocalStorage';
 import type { TMusicVariant } from 'interfaces/queue';
 import { useCallback, useContext } from 'react';
 import { QueueContext } from '../../queueManager';
+import { useSnackbar } from 'notistack';
 
 const variants: Record<TMusicVariant, string>  = {
   unconditioned: "Unconditioned Music Generation",
@@ -29,6 +30,8 @@ function isVariant(value: string): value is TMusicVariant {
 type TInputChangeEvent = React.ChangeEvent<HTMLInputElement>
 
 export const Music = () => {
+  const { enqueueSnackbar } = useSnackbar();
+
   const [variant, setVariant] = useLocalStorage<TMusicVariant>('AIMusic_variant', 'unconditioned');
   const [audio_length, setAudioLength] = useLocalStorage('AIMusic_length', "10");
   const [prompt, setPrompt] = useLocalStorage('AIMusic_prompt', "");
@@ -60,7 +63,11 @@ export const Music = () => {
       audio_path,
       prompt
     })
-  }, [variant, audio_length, prompt, audio_path]);
+    enqueueSnackbar({
+      message: `Added to queue. Currently ${queue.length() + 1} elements in queue`,
+      variant: 'info'
+    })
+  }, [variant, audio_length, prompt, audio_path, queue]);
 
   const isMusicVariant = variant === 'musicContinuation' || variant === 'musicToMusic';
 

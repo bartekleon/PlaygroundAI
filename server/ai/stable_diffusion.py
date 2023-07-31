@@ -57,8 +57,6 @@ class StableDiffusion(AIBase):
       'end': timestep,
       'percentage': step / timestep * 100
     })
-    
-    pass
   
   def _generate(self, settings: ImageElement):
     self.model = self._load_model(settings)

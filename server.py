@@ -48,7 +48,7 @@ def new_job(data: ImageElement | MusicElement):
     # Unexpected errors, how did they even happen
     socketio.emit('error', exception_to_dict(exc))
 
-  socketio.emit('new_job')
+  socketio.emit('job_done')
       
 if __name__ == '__main__':
   socketio.run(app, host='127.0.0.1', port=5000)

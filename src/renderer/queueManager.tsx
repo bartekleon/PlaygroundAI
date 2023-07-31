@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { SocketContext } from "./socket_connection/socket";
 import { arraySwap } from "./utils/arraySwap";
 import type { TQueue, TQueueElement } from "interfaces/queue";
@@ -12,6 +12,7 @@ export const QueueContext = createContext<{
   addToQueue: (newElement: TQueueElement) => void;
   pauseQueue: () => void;
   resumeQueue: () => void;
+  length: () => number;
 }>({
   queue: [],
   currentJob: undefined,
@@ -19,6 +20,7 @@ export const QueueContext = createContext<{
   addToQueue: emptyFunction,
   pauseQueue: emptyFunction,
   resumeQueue: emptyFunction,
+  length: () => 0,
 });
 
 
@@ -58,6 +60,8 @@ export const QueueProvider = ({ children } : { children: React.ReactNode }) => {
     };
   }, [queue, isPaused, currentJob]);
 
+  const length = useCallback(() => currentJob ? queue.length + 1 : queue.length, [queue, currentJob])
+
   const switchElements = (a: number, b: number) => setQueue(arraySwap([...queue], a, b));
 
   const addToQueue = (newElement: TQueueElement) => setQueue((prevQueue) => [...prevQueue, newElement]);
@@ -72,6 +76,7 @@ export const QueueProvider = ({ children } : { children: React.ReactNode }) => {
     switchElements,
     addToQueue,
     pauseQueue,
-    resumeQueue
+    resumeQueue,
+    length,
   }} />;
 };

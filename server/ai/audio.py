@@ -95,9 +95,12 @@ class AudioAI(AIBase):
       return # TODO HANDLE PROPERLY
 
     if self.model is None:
+      self.socket.emit('model_status_change', { 'status': 'Loading Audio model' })
       self.model = PatchedMusicGen.get_pretrained(self.socket, 'melody')
+      self.socket.emit('model_status_change', { 'status': 'Loading Audio model finished' })
     self.model.set_generation_params(duration=settings['audio_length'])
     
+    self.socket.emit('model_status_change', { 'status': 'Generating...' })
     audio = self._generate(settings)
     
     self._save_audio(audio, settings['prompt'])
