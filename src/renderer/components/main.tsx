@@ -1,17 +1,16 @@
-import { Routes, Route } from 'react-router-dom';
+import { useContext, useEffect } from 'react';
+import { SnackbarProvider, enqueueSnackbar } from 'notistack';
+
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from "@mui/material/Box";
 
 import { MiniDrawer } from "./menu/menu";
 import { DrawerHeader } from "./menu/drawer";
-import { Music } from "./music/music";
 import { QueueProvider } from "../queueManager";
-import { Installer } from './installer/installer';
 import { ProgressBar } from './progressbar/progressbar';
-import { useContext, useEffect } from 'react';
 import { SocketContext } from '../socket_connection/socket';
-import { SnackbarProvider, enqueueSnackbar } from 'notistack';
+import { Router } from './router';
 
 const darkTheme = createTheme({
   palette: {
@@ -64,15 +63,7 @@ export const Main = () => {
           <DrawerHeader />
           <QueueProvider>
             <SnackbarProvider maxSnack={5}>
-              <Routes>
-                <Route element={<Music />} path="/" />
-                <Route element={<Music />} path="/music" />
-                <Route element={<Installer />} path="/installation" />
-                <Route element={<></>} path="/test3" />
-                <Route element={<></>} path="/test4" />
-                <Route element={<></>} path="/test5" />
-                <Route element={<></>} path="/test6" />
-              </Routes>
+              <Router />
             </SnackbarProvider>
           </QueueProvider>
           <ProgressBar />

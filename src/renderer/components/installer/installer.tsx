@@ -1,12 +1,36 @@
 import { useCallback, useEffect, useState } from "react";
-import { Button } from "@mui/material";
+import { Box, Button, ButtonProps, CircularProgress } from "@mui/material";
 
 import { TInstallations, TInstallationState } from "interfaces/installations";
+
+const InstallationButtonColor = (value: TInstallationState): ButtonProps['color'] => {
+    switch(value) {
+        case TInstallationState.Installed:
+            return 'success';
+        case TInstallationState.Installing:
+            return 'warning';
+        case TInstallationState.NotInstalled:
+            return 'error';
+        case TInstallationState.Unknown:
+            return 'secondary';
+    }
+}
 
 const InstallationProgress = (
     { name, value, onClick } : { name: string; value: TInstallationState, onClick?: () => void }
 ) => {
-    return <Button onClick={onClick}>{name} {value}</Button>
+    return (
+        <Box>
+            { value === TInstallationState.Installing ? <CircularProgress /> : null }
+            <Button
+                onClick={onClick}
+                variant='contained'
+                color={InstallationButtonColor(value)}
+            >
+                {name} {value}
+            </Button>
+        </Box>
+    );
 }
 
 export const Installer = () => {

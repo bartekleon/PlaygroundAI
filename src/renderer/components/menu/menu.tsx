@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
@@ -9,44 +8,13 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
 import TuneIcon from '@mui/icons-material/Tune';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import ImageIcon from '@mui/icons-material/Image';
 
 import { AppBar, Drawer, DrawerHeader } from './drawer';
-
-const MiniDrawerListItem = (
-  { open, icon, text, link } : { open: boolean, icon: React.ReactNode, text: string, link: string }
-) => {
-  return (
-    <Link to={link}>
-      <ListItem disablePadding sx={{ display: 'block' }}>
-        <ListItemButton
-          sx={{
-            minHeight: 48,
-            justifyContent: open ? 'initial' : 'center',
-            px: 2.5,
-          }}
-        >
-          <ListItemIcon
-            sx={{
-              minWidth: 0,
-              mr: open ? 3 : 'auto',
-              justifyContent: 'center',
-            }}
-          >
-            {icon}
-          </ListItemIcon>
-          <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-        </ListItemButton>
-      </ListItem>
-    </Link>
-  );
-}
+import { MiniDrawerListItem } from './miniDrawerListItem';
 
 export const MiniDrawer = () => {
   const theme = useTheme();
@@ -85,6 +53,7 @@ export const MiniDrawer = () => {
         </DrawerHeader>
         <Divider />
         <List>
+          <MiniDrawerListItem open={open} icon={<ImageIcon />} text='stable diffusion' link='/stablediffusion' />
           <MiniDrawerListItem open={open} icon={<MusicNoteIcon />} text='music' link='/music' />
         </List>
         <Divider />
