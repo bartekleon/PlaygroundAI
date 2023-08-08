@@ -1,82 +1,91 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { SocketContext } from "./socket_connection/socket";
+import { socket_context } from "./socket_connection/socket";
 import { arraySwap } from "./utils/arraySwap";
-import type { TQueue, TQueueElement } from "interfaces/queue";
-
+import type { QueueType, QueueElementType } from "interfaces/queue";
 
 const emptyFunction: () => void = () => undefined;
-export const QueueContext = createContext<{
-  queue: TQueue;
-  currentJob: TQueueElement | undefined;
+
+interface QueueContextType {
+  queue: QueueType;
+  current_job: QueueElementType | undefined;
   switchElements: (index1: number, index2: number) => void;
-  addToQueue: (newElement: TQueueElement) => void;
+  addToQueue: (newElement: QueueElementType) => void;
   pauseQueue: () => void;
   resumeQueue: () => void;
   length: () => number;
-}>({
+}
+
+export const queue_context = createContext<QueueContextType>({
   queue: [],
-  currentJob: undefined,
+  current_job: undefined,
   switchElements: emptyFunction,
   addToQueue: emptyFunction,
   pauseQueue: emptyFunction,
   resumeQueue: emptyFunction,
-  length: () => 0,
+  length: () => 0
 });
 
+export const QueueProvider = ({ children }: { children: React.ReactNode }) => {
+  const [queue, setQueue] = useState<QueueType>([]);
+  const [current_job, setCurrentJob] = useState<QueueElementType>();
+  const [is_paused, setIsPaused] = useState(false);
 
-export const QueueProvider = ({ children } : { children: React.ReactNode }) => {
-  const [queue, setQueue] = useState<TQueue>([]);
-  const [currentJob, setCurrentJob] = useState<TQueueElement>();
-  const [isPaused, setIsPaused] = useState(false);
-
-  const socket = useContext(SocketContext);
+  const socket = useContext(socket_context);
 
   useEffect(() => {
-    const _emitJob = () => {
-      const newJob = queue.shift();
-      setCurrentJob(newJob);
-      setQueue([...queue]);
-      socket.emit('new_job', newJob);
-    }
-
     const emitJob = () => {
-      if (!isPaused) {
-        if(queue.length > 0) {
-          _emitJob();
+      const new_job = queue.shift();
+      setCurrentJob(new_job);
+      setQueue([...queue]);
+      socket.emit("new_job", new_job);
+    };
+
+    const socketEmitJob = () => {
+      if (!is_paused) {
+        if (queue.length > 0) {
+          emitJob();
         } else {
           setCurrentJob(undefined);
         }
       }
+    };
+
+    if (current_job === undefined && queue.length > 0 && !is_paused) {
+      emitJob();
     }
 
-    if (currentJob === undefined && queue.length > 0 && !isPaused) {
-      _emitJob();
-    }
-
-    socket.on('job_done', emitJob);
+    socket.on("job_done", socketEmitJob);
 
     return () => {
-      socket.off('job_done', emitJob);
+      socket.off("job_done", socketEmitJob);
     };
-  }, [queue, isPaused, currentJob]);
+  }, [queue, is_paused, current_job]);
 
-  const length = useCallback(() => currentJob ? queue.length + 1 : queue.length, [queue, currentJob])
+  const length = useCallback(() => current_job ? queue.length + 1 : queue.length, [queue, current_job]);
 
-  const switchElements = (a: number, b: number) => setQueue(arraySwap([...queue], a, b));
+  const switchElements = (a: number, b: number) => {
+    setQueue(arraySwap([...queue], a, b)); 
+  };
 
-  const addToQueue = (newElement: TQueueElement) => setQueue((prevQueue) => [...prevQueue, newElement]);
+  const addToQueue = (new_element: QueueElementType) => {
+    setQueue((prev_queue) => [...prev_queue, new_element]); 
+  };
 
-  const pauseQueue = () => setIsPaused(true);
+  const pauseQueue = () => {
+    setIsPaused(true); 
+  };
 
-  const resumeQueue = () => setIsPaused(false);
+  const resumeQueue = () => {
+    setIsPaused(false); 
+  };
 
-  return <QueueContext.Provider children={children} value={{
+  return <queue_context.Provider children={children} value={{
     queue,
-    currentJob,
+    current_job,
     switchElements,
     addToQueue,
     pauseQueue,
     resumeQueue,
-    length,
+    length
   }} />;
 };

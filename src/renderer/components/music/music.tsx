@@ -13,7 +13,7 @@ import {
 import { useLocalStorage } from "../../utils/useLocalStorage";
 import type { MusicVariantType } from "interfaces/queue";
 import { useCallback, useContext } from "react";
-import { QueueContext } from "../../queueManager";
+import { queue_context } from "../../queueManager";
 import { useSnackbar } from "notistack";
 
 const variants: Record<MusicVariantType, string>  = {
@@ -37,7 +37,7 @@ export const Music = () => {
   const [prompt, setPrompt] = useLocalStorage("AIMusic_prompt", "");
   const [audio_path, setAudioPath] = useLocalStorage("AIMusic_file", "");
 
-  const queue = useContext(QueueContext);
+  const queue = useContext(queue_context);
 
   const handleVariantChange = (event: InputChangeEventType) => {
     if (isVariant(event.target.value)) {
