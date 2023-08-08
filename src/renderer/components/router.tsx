@@ -16,4 +16,4 @@ export const Router = () => {
       <Route element={<></>} path="/test6" />
     </Routes>
   );
-}
+};

@@ -1,19 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
-export const useLocalStorage = <T = unknown>(key: string, defaultValue?: T) => {
+type SetValueType<Type> = React.Dispatch<React.SetStateAction<Type>>;
+
+export function useLocalStorage<Type> (key: string): [Type | null, SetValueType<Type>];
+export function useLocalStorage<Type> (key: string, default_value: Type): [Type, SetValueType<Type>];
+export function useLocalStorage<Type = unknown> (key: string, default_value?: Type) {
   const readValue = () => {
     try {
       const item = localStorage.getItem(key);
-      return item ? JSON.parse(item) : defaultValue;
+      return item ? JSON.parse(item) as Type : default_value ?? null;
     } catch (error) {
       console.warn(`Error reading localStorage key '${key}':`, error);
-      return defaultValue;
+      return default_value ?? null;
     }
   };
 
-  const [storedValue, setStoredValue] = useState<T>(readValue);
+  const [stored_value, setStoredValue] = useState<Type | null>(readValue);
 
-  const setValue = (value: T) => {
+  const setValue = (value: Type) => {
     setStoredValue(value);
     try {
       const str = JSON.stringify(value);
@@ -28,11 +32,11 @@ export const useLocalStorage = <T = unknown>(key: string, defaultValue?: T) => {
       setStoredValue(readValue());
     };
 
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
 
-  return [storedValue, setValue] as [T, React.Dispatch<React.SetStateAction<T>>];
+  return [stored_value, setValue];
 }

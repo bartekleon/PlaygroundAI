@@ -1,15 +1,13 @@
-type Path = string;
+export type MusicVariantType = "musicContinuation" | "musicToMusic" | "textToMusic" | "unconditioned";
 
-export type TMusicVariant = "unconditioned" | "textToMusic" | "musicToMusic" | "musicContinuation";
-
-export interface TMusicElement {
-  type: 'music';
-  variant: TMusicVariant;
+export interface MusicElementType {
+  type: "music";
+  variant: MusicVariantType;
   audio_length: number;
-  audio_path: Path;
+  audio_path: string;
   prompt: string;
 }
 
-export type TQueueElement = TMusicElement;
+export type QueueElementType = MusicElementType;
 
-export type TQueue = TQueueElement[];
+export type QueueType = QueueElementType[];

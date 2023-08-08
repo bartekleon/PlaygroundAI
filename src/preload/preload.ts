@@ -1,22 +1,24 @@
-import { ipcRenderer as IPC, IpcRendererEvent as IPCEvent, contextBridge } from "electron";
-import type { TInstallations } from "interfaces/installations";
+import type { IpcRendererEvent as IPCEvent } from "electron";
+import { ipcRenderer as IPC, contextBridge } from "electron";
+import type { InstallationsType } from "interfaces/installations";
 
-const safeIPC = (eventName: string) => <T>(callback: (_: IPCEvent, value: T) => void) => {
-  IPC.on(eventName, callback);
-  return () => IPC.off(eventName, callback);
-}
+const safeIPC = (event_name: string) => <Type>(callback: (_: IPCEvent, value: Type) => void) => {
+  IPC.on(event_name, callback);
+  return () => IPC.off(event_name, callback);
+};
 
 const api = {
-  testInstallations: (): Promise<TInstallations> => IPC.invoke('testInstallations'),
-  installPython: (): Promise<string> => IPC.invoke('installPython'),
-  installPipenv: (): Promise<string> => IPC.invoke('installPipenv'),
-  installServer: (): Promise<string> => IPC.invoke('installServer'),
-}
+  testInstallations: async () => IPC.invoke("testInstallations") as Promise<InstallationsType>,
+  installPython: async () => IPC.invoke("installPython") as Promise<string>,
+  installPipenv: async () => IPC.invoke("installPipenv") as Promise<string>,
+  installServer: async () => IPC.invoke("installServer") as Promise<string>
+};
 
 //window.api = api;
-contextBridge.exposeInMainWorld('api', api);
+contextBridge.exposeInMainWorld("api", api);
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   interface Window {
     api: typeof api;
   }

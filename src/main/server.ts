@@ -1,28 +1,29 @@
-import { spawn, ChildProcessWithoutNullStreams, execSync } from 'child_process';
+import type { ChildProcessWithoutNullStreams } from "child_process";
+import { spawn, execSync } from "child_process";
 
 let server: ChildProcessWithoutNullStreams | null = null;
 
 export const startServer = () => {
-  server = spawn('pipenv run python ./server.py', { detached: true, shell: true });
+  server = spawn("pipenv run python ./server.py", { detached: true, shell: true });
 
-  server.stdout.on('data', data => {
-    console.log(`Got some data : ${data}`)
+  server.stdout.on("data", data => {
+    console.log(`Got some data : ${String(data)}`);
   });
     
-  server.stderr.on('data', data => {
-    console.log(`Got some error : ${data}`)
+  server.stderr.on("data", data => {
+    console.log(`Got some error : ${String(data)}`);
   });
 
-  server.on('close', (code) => {
-    console.log(`child process exited with code ${code}`);
+  server.on("close", (code) => {
+    console.log(`child process exited with code ${String(code)}`);
   });
-}
+};
+
+export const closeServer = () => {
+  if (server?.pid) execSync(`taskkill /pid ${server.pid} /T /F`);
+};
 
 export const restartServer = () => {
   closeServer();
   startServer();
-}
-
-export const closeServer = () => {
-  if (server?.pid) execSync(`taskkill /pid ${server.pid} /T /F`);
-}
+};

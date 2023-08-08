@@ -21,10 +21,135 @@
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/all",
     "plugin:import/recommended",
     "plugin:import/electron",
     "plugin:import/typescript"
   ],
-  "parser": "@typescript-eslint/parser"
+  "parser": "@typescript-eslint/parser",
+  "rules": {
+    "@typescript-eslint/indent": ["error", 2],
+    "@typescript-eslint/object-curly-spacing": ["error", "always"],
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/no-floating-promises": "off",
+    "@typescript-eslint/no-misused-promises": "off",
+    "@typescript-eslint/no-type-alias": "off",
+    "@typescript-eslint/no-magic-numbers": "off",
+    "@typescript-eslint/prefer-readonly-parameter-types": "off",
+    "@typescript-eslint/strict-boolean-expressions": "off",
+
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        "selector": "variable",
+        "format": ["snake_case"],
+        "leadingUnderscore": "forbid",
+        "trailingUnderscore": "forbid"
+      },
+      {
+        "selector": "variable",
+        "types": ["function"],
+        "format": ["camelCase", "PascalCase"],
+        "leadingUnderscore": "forbid",
+        "trailingUnderscore": "forbid",
+        "filter": {
+          "regex": "^set[A-Z].*$",
+          "match": true
+        }
+      },
+      {
+        "selector": "variable",
+        "types": ["function"],
+        "format": ["camelCase"]
+      },
+      {
+        "selector": "variable",
+        "types": ["function"],
+        "format": ["PascalCase"],
+        "leadingUnderscore": "forbid",
+        "trailingUnderscore": "forbid",
+        "filter": {
+          "regex": "^[A-Z].*$",
+          "match": true
+        }
+      },
+      {
+        "selector": "variable",
+        "format": ["UPPER_CASE"],
+        "modifiers": ["global", "const"],
+        "leadingUnderscore": "forbid",
+        "trailingUnderscore": "forbid",
+        "filter": {
+          "regex": "^[A-Z_][A-Z0-9_]*$",
+          "match": true
+        }
+      },
+      {
+        "selector": "variable",
+        "types": ["boolean"],
+        "format": ["snake_case"],
+        "leadingUnderscore": "forbid",
+        "trailingUnderscore": "forbid",
+        "prefix": ["is_", "should_", "has_", "can_", "did_", "will_"]
+      },
+      {
+        "selector": "parameter",
+        "format": ["snake_case"],
+        "modifiers": ["unused"],
+        "leadingUnderscore": "require"
+      },
+      {
+        "selector": "parameter",
+        "format": ["snake_case"]
+      },
+      {
+        "selector": "parameter",
+        "types": ["function"],
+        "format": ["camelCase"]
+      },
+      {
+        "selector": "typeLike",
+        "format": ["PascalCase"],
+        "custom": {
+          "regex": "Type$",
+          "match": true
+        }
+      },
+      {
+        "selector": "enumMember",
+        "format": ["UPPER_CASE"]
+      },
+      {
+        "selector": "function",
+        "format": ["camelCase"]
+      },
+      {
+        "selector": "class",
+        "format": ["PascalCase"]
+      },
+      {
+        "selector": "interface",
+        "format": ["PascalCase"],
+        "custom": {
+          "regex": "(Type|Props)$",
+          "match": true
+        }
+      },
+      {
+        "selector": "enum",
+        "format": ["PascalCase"]
+      },
+      {
+        "selector": "memberLike",
+        "modifiers": ["public"],
+        "format": ["snake_case", "camelCase"]
+      },
+      {
+        "selector": "method",
+        "modifiers": ["public"],
+        "format": ["camelCase"]
+      }
+    ]
+  }
 }

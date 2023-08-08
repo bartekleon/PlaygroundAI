@@ -8,12 +8,12 @@ interface MiniDrawerListItemProps  {
   link: string;
 }
 
-export const MiniDrawerListItem = ({ open, icon, text, link } : MiniDrawerListItemProps) => {
+export const MiniDrawerListItem = ({ open, icon, text, link }: MiniDrawerListItemProps) => {
   return (
     <Link to={link}>
-      <ListItem disablePadding sx={{ display: 'block' }}>
-        <ListItemButton sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5 }}>
-          <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
+      <ListItem disablePadding sx={{ display: "block" }}>
+        <ListItemButton sx={{ minHeight: 48, justifyContent: open ? "initial" : "center", px: 2.5 }}>
+          <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : "auto", justifyContent: "center" }}>
             {icon}
           </ListItemIcon>
           <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
@@ -21,4 +21,4 @@ export const MiniDrawerListItem = ({ open, icon, text, link } : MiniDrawerListIt
       </ListItem>
     </Link>
   );
-}
+};

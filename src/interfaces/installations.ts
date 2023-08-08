@@ -1,16 +1,16 @@
-export enum TInstallationState {
-  Unknown,
-  NotInstalled,
-  Installing,
-  Installed
+export enum InstallationState {
+  UNKNOWN = 0,
+  NOT_INSTALLED = 1,
+  INSTALLING = 2,
+  INSTALLED = 3
 }
 
-export interface TInstallations {
-  has_python: TInstallationState;
-  has_pip: TInstallationState;
-  has_pipenv: TInstallationState;
-  has_server: TInstallationState;
-  has_basic: TInstallationState;
-  has_music: TInstallationState;
-  has_diffusers: TInstallationState;
+export interface InstallationsType {
+  has_python: InstallationState;
+  has_pip: InstallationState;
+  has_pipenv: InstallationState;
+  has_server: InstallationState;
+  has_basic: InstallationState;
+  has_music: InstallationState;
+  has_diffusers: InstallationState;
 }
