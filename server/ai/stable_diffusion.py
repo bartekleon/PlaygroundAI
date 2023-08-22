@@ -25,7 +25,6 @@ class ImageElement(TypedDict):
   model: Path
   prompt: str
   steps: int
-  prompt: str
 
 class StableDiffusion(AIBase):
   def __init__(self, socket: SocketIO):

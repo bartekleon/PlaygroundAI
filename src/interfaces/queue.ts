@@ -8,6 +8,16 @@ export interface MusicElementType {
   prompt: string;
 }
 
-export type QueueElementType = MusicElementType;
+export type ImageVariantType = "txt2img";
+
+export interface ImageElementType {
+  type: "image";
+  variant: ImageVariantType;
+  model: string;
+  prompt: string;
+  steps: number;
+}
+
+export type QueueElementType = ImageElementType | MusicElementType;
 
 export type QueueType = QueueElementType[];
