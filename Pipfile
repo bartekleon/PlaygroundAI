@@ -23,6 +23,7 @@ flask-socketio = "*"
 diffusers = "*"
 invisible-watermark = ">=0.2.0"
 accelerate = "*"
+protobuf = "*"
 
 [dev-packages]
 

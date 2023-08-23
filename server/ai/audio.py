@@ -10,7 +10,7 @@ from server.ai.base import AIBase
 from server.utils.generate_filename import generate_filename
 
 try:
-  from server.patches.patched_music_gen import PatchedMusicGen
+  from audiocraft.models.musicgen import MusicGen
   from audiocraft.data.audio import audio_write
   _supports_audio_ai = True
   
@@ -33,7 +33,7 @@ class MusicElement(TypedDict):
 
 class AudioAI(AIBase):
   def __init__(self, socket: SocketIO):
-    self.model: PatchedMusicGen | None = None
+    self.model: MusicGen | None = None
     self.socket = socket
     
   def destroy(self):
@@ -89,6 +89,13 @@ class AudioAI(AIBase):
     assert func, f"Invalid variant: {variant}"
     
     return func(settings)
+  
+  def _progress_callback(self, generated_tokens: int, tokens_to_generate: int):
+    self.socket.emit('get_progress', {
+      'start': generated_tokens,
+      'end': tokens_to_generate,
+      'percentage': generated_tokens / tokens_to_generate * 100
+    })
           
   def generate(self, settings: MusicElement):
     if not _supports_audio_ai:
@@ -96,7 +103,8 @@ class AudioAI(AIBase):
 
     if self.model is None:
       self.socket.emit('model_status_change', { 'status': 'Loading Audio model' })
-      self.model = PatchedMusicGen.get_pretrained(self.socket, 'melody')
+      self.model = MusicGen.get_pretrained('melody')
+      self.model.set_custom_progress_callback(self._progress_callback)
       self.socket.emit('model_status_change', { 'status': 'Loading Audio model finished' })
     self.model.set_generation_params(duration=settings['audio_length'])
     
