@@ -11,7 +11,9 @@ const commandAvailable = async (command: string) => promisedExec(command)
   .catch(() => InstallationState.NOT_INSTALLED);
 
 const packagesInstalled = async (command: string) => promisedExec(command)
-  .then(({ stdout }) => stdout === "success" ? InstallationState.INSTALLED : InstallationState.NOT_INSTALLED)
+  .then(({ stdout }) => {
+    return stdout.includes("success") ? InstallationState.INSTALLED : InstallationState.NOT_INSTALLED;
+  })
   .catch(() => InstallationState.NOT_INSTALLED);
 
 const runCommand = async (command: string) => promisedExec(command)
@@ -62,10 +64,12 @@ export const determineInstallation = async (): Promise<InstallationsType> => {
   let has_diffusers = InstallationState.UNKNOWN;
 
   if (has_pip && has_pipenv) {
-    has_server = await checkServerRequirements();
-    has_basic = await checkBasicRequirements();
-    has_music = await checkMusicRequirements();
-    has_diffusers = await checkDiffusersRequirements();
+    [has_server, has_basic, has_music, has_diffusers] = await Promise.all([
+      checkServerRequirements(),
+      checkBasicRequirements(),
+      checkMusicRequirements(),
+      checkDiffusersRequirements()
+    ]);
   }
 
   return {

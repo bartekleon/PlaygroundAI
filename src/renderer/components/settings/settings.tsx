@@ -1,10 +1,8 @@
 import * as React from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import { useLocalStorage } from "../../utils/useLocalStorage";
-import { Button } from "@mui/material";
+import { StableDiffusionSettings } from "./stableDiffusionSettings";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -24,9 +22,7 @@ const CustomTabPanel = (props: TabPanelProps) => {
       {...other}
     >
       {value === index && 
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
+        <Box sx={{ p: 3 }}>{children}</Box>
       }
     </div>
   );
@@ -56,19 +52,6 @@ const CustomTabs = ({ value, setValue, tabs }: CustomTabsProps) => {
 
 export const Settings = () => {
   const [value, setValue] = React.useState(0);
-  const [models_path, setModelsPath] = useLocalStorage("AIImage_models_path", "");
-  const [vaes_path, setVaesPath] = useLocalStorage("AIImage_vaes_path", "");
-  const [loras_path, setLorasPath] = useLocalStorage("AIImage_loras_path", "");
-
-  const handleModelsChange = () => {
-    window.api.choosePath().then(setModelsPath);
-  };
-  const handleVaesChange = () => {
-    window.api.choosePath().then(setVaesPath);
-  };
-  const handleLorasChange = () => {
-    window.api.choosePath().then(setLorasPath);
-  };
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -77,18 +60,7 @@ export const Settings = () => {
       </Box>
 
       <CustomTabPanel value={value} index={0}>
-        <Box my={2}>
-          <Button onClick={handleModelsChange}>Choose Models Path</Button>
-          <Typography variant="body1">Models path: {models_path}</Typography>
-        </Box>
-        <Box my={2}>
-          <Button onClick={handleVaesChange}>Choose Vaes Path</Button>
-          <Typography variant="body1">Models path: {vaes_path}</Typography>
-        </Box>
-        <Box my={2}>
-          <Button onClick={handleLorasChange}>Choose Loras Path</Button>
-          <Typography variant="body1">Models path: {loras_path}</Typography>
-        </Box>
+        <StableDiffusionSettings />
       </CustomTabPanel>
 
       <CustomTabPanel value={value} index={1}>

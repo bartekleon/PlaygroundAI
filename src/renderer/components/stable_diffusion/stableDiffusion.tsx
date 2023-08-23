@@ -21,6 +21,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { queue_context } from "../../queueManager";
 import { useSnackbar } from "notistack";
 import type { FilePathType } from "interfaces/getFiles";
+import { IntermediateImage } from "../progressbar/intermediateImage";
 
 const variants: Record<ImageVariantType, string>  = {
   txt2img: "Text to image"
@@ -32,16 +33,10 @@ function isVariant (value: string): value is ImageVariantType {
 
 type InputChangeEventType = React.ChangeEvent<HTMLInputElement>;
 
-export const StableDiffusion = () => {
-  const { enqueueSnackbar } = useSnackbar();
-
-  const [variant, setVariant] = useLocalStorage<ImageVariantType>("AIImage_variant", "txt2img");
-  const [steps, setSteps] = useLocalStorage("AIImage_steps", "30");
-  const [prompt, setPrompt] = useLocalStorage("AIImage_prompt", "");
+const ModelSelect = () => {
   const [model, setModel] = useLocalStorage("AIImage_model", "");
-  const [models_path, setModelsPath] = useLocalStorage("AIImage_models_path", "");
+  const [models_path] = useLocalStorage("AIImage_models_path", "");
   const [available_models, setAvailableModels] = useState<FilePathType[]>([]);
-  const [available_loras, setAvailableLoras] = useState<FilePathType[]>([]);
 
   useEffect(() => {
     const eventOff = window.api.modelsChange((_, models) => {
@@ -57,6 +52,37 @@ export const StableDiffusion = () => {
     window.api.modelsFolder(models_path);
   }, [models_path]);
 
+  const handleModelChange = (event: SelectChangeEvent) => {
+    if (event.target.value) {
+      setModel(event.target.value);
+    }
+  };
+
+  return (
+    <Box my={2}>
+      <FormControl fullWidth>
+        <InputLabel>Model</InputLabel>
+        <Select onChange={handleModelChange}
+          value={model}
+          label="Model">
+
+          { available_models.map(ckpt => {
+            return <MenuItem key={ckpt.full_path} value={ckpt.full_path}>{ckpt.relative_path}</MenuItem>;
+          }) }
+        </Select>
+      </FormControl>
+    </Box>
+  );
+};
+
+export const StableDiffusion = () => {
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [variant, setVariant] = useLocalStorage<ImageVariantType>("AIImage_variant", "txt2img");
+  const [steps, setSteps] = useLocalStorage("AIImage_steps", "30");
+  const [prompt, setPrompt] = useLocalStorage("AIImage_prompt", "");
+  const [model] = useLocalStorage("AIImage_model", "");
+
   const queue = useContext(queue_context);
 
   const handleVariantChange = (event: InputChangeEventType) => {
@@ -71,12 +97,6 @@ export const StableDiffusion = () => {
 
   const handlePromptChange = (event: InputChangeEventType) => {
     setPrompt(event.target.value); 
-  };
-
-  const handleModelChange = (event: SelectChangeEvent) => {
-    if (event.target.value) {
-      setModel(event.target.value);
-    }
   };
 
   const handleGenerateClick = useCallback(() => {
@@ -124,23 +144,13 @@ export const StableDiffusion = () => {
         />
       </Box>
 
-      <Box my={2}>
-        <FormControl fullWidth>
-          <InputLabel>Model</InputLabel>
-          <Select onChange={handleModelChange}
-            value={model}
-            label="Model">
-
-            { available_models.map(ckpt => {
-              return <MenuItem key={ckpt.full_path} value={ckpt.full_path}>{ckpt.relative_path}</MenuItem>;
-            }) }
-          </Select>
-        </FormControl>
-      </Box>
+      <ModelSelect />
 
       <Button variant="contained" color="primary" onClick={handleGenerateClick}>
         Generate
       </Button>
+
+      <IntermediateImage />
     </Container>
   );
 };

@@ -1,5 +1,7 @@
 import type { BrowserWindow } from "electron";
-import { ipcMain } from "electron";
+import { ipcMain, shell } from "electron";
+
+import path from "path";
 
 import { determineInstallation, installPipenv, installPython, installServer } from "../dependencies/test_python";
 import { FileWatcher } from "../helpers/filesWatcher";
@@ -15,6 +17,10 @@ export const createIPC = (main_window: BrowserWindow) => {
   ipcMain.handle("choosePath", async () => {
     const dirs = await electronDialog("Directory");
     return dirs.length ? dirs[0] : "";
+  });
+
+  ipcMain.handle("showInExplorer", (_, data: string) => {
+    shell.openPath(path.resolve(data));
   });
 
   const getCheckpoints = async (folder: string) => {

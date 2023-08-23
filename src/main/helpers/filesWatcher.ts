@@ -20,11 +20,11 @@ export class FileWatcher {
       folder_path = app.getPath("home");
     }
 
+    this._callback(folder_path)("", null);
     if (this.current_folder_path === folder_path) return;
 
     this.current_folder_path = folder_path;
     this._watcher?.close();
     this._watcher = fs.watch(folder_path, this._callback(this.current_folder_path));
-    this._callback(this.current_folder_path)("", null);
   };
 }

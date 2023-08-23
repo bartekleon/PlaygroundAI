@@ -14,16 +14,18 @@ const api = {
   installPipenv: async () => IPC.invoke("installPipenv") as Promise<string>,
   installServer: async () => IPC.invoke("installServer") as Promise<string>,
 
-  modelsFolder: async (folder_path: string) => IPC.invoke("modelsFolder", folder_path) as Promise<FilePathType[]>,
+  modelsFolder: async (folder_path: string) => IPC.invoke("modelsFolder", folder_path) as Promise<void>,
   modelsChange: safeIPC<FilePathType[]>("modelsChange"),
 
-  lorasFolder: async (folder_path: string) => IPC.invoke("lorasFolder", folder_path) as Promise<FilePathType[]>,
+  lorasFolder: async (folder_path: string) => IPC.invoke("lorasFolder", folder_path) as Promise<void>,
   lorasChange: safeIPC<FilePathType[]>("lorasChange"),
 
-  vaesFolder: async (folder_path: string) => IPC.invoke("vaesFolder", folder_path) as Promise<FilePathType[]>,
+  vaesFolder: async (folder_path: string) => IPC.invoke("vaesFolder", folder_path) as Promise<void>,
   vaesChange: safeIPC<FilePathType[]>("vaesChange"),
 
-  choosePath: async () => IPC.invoke("choosePath") as Promise<string>
+  choosePath: async () => IPC.invoke("choosePath") as Promise<string>,
+
+  showInExplorer: async (path: string) => IPC.invoke("showInExplorer", path) as Promise<void>
 };
 
 //window.api = api;
