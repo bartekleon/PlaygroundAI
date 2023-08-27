@@ -1,11 +1,12 @@
-import { createRoot } from 'react-dom/client';
-import { HashRouter } from 'react-router-dom';
+import { createRoot } from "react-dom/client";
+import { HashRouter } from "react-router-dom";
 
-import './index.css';
+import "./index.css";
 
-import { Main } from './components/main';
+import { Main } from "./components/main";
 
-createRoot(document.getElementById('app') as HTMLElement).render(
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+createRoot(document.getElementById("app")!).render(
   <HashRouter>
     <Main />
   </HashRouter>
