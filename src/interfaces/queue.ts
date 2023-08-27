@@ -1,4 +1,5 @@
 export type MusicVariantType = "musicContinuation" | "musicToMusic" | "textToMusic" | "unconditioned";
+export type AudioGenModelType = "large" | "medium" | "melody" | "small";
 
 export interface MusicElementType {
   type: "music";
@@ -6,15 +7,17 @@ export interface MusicElementType {
   audio_length: number;
   audio_path: string;
   prompt: string;
+  model: AudioGenModelType;
 }
 
-export type ImageVariantType = "txt2img";
+export type ImageVariantType = "img2img" | "inpainting" | "txt2img";
 
 export interface ImageElementType {
   type: "image";
   variant: ImageVariantType;
   model: string;
   prompt: string;
+  negative_prompt: string;
   steps: number;
 }
 

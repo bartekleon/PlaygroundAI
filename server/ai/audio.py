@@ -24,17 +24,25 @@ class MusicVariant(str, Enum):
   MUSIC_TO_MUSIC = "musicToMusic"
   MUSIC_CONTINUATION = "musicContinuation"
 
+class MusicModel(str, Enum):
+  LARGE = "large"
+  MEDIUM = "medium"
+  MELODY = "melody"
+  SMALL = "small"
+
 class MusicElement(TypedDict):
   type: Literal['music']
   variant: MusicVariant
   audio_length: float
   audio_path: Path
   prompt: str
+  model: MusicModel
 
 class AudioAI(AIBase):
   def __init__(self, socket: SocketIO):
     self.model: MusicGen | None = None
     self.socket = socket
+    self.last_model = 'melody'
     
   def destroy(self):
     self.model = None
@@ -101,9 +109,9 @@ class AudioAI(AIBase):
     if not _supports_audio_ai:
       return # TODO HANDLE PROPERLY
 
-    if self.model is None:
+    if self.model is None or self.last_model != settings['model']:
       self.socket.emit('model_status_change', { 'status': 'Loading Audio model' })
-      self.model = MusicGen.get_pretrained('melody')
+      self.model = MusicGen.get_pretrained(settings['model'])
       self.model.set_custom_progress_callback(self._progress_callback)
       self.socket.emit('model_status_change', { 'status': 'Loading Audio model finished' })
     self.model.set_generation_params(duration=settings['audio_length'])

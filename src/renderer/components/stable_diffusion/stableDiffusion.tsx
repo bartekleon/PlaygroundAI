@@ -24,7 +24,9 @@ import type { FilePathType } from "interfaces/getFiles";
 import { IntermediateImage } from "../progressbar/intermediateImage";
 
 const variants: Record<ImageVariantType, string>  = {
-  txt2img: "Text to image"
+  txt2img: "Text to image",
+  img2img: "Image to image",
+  inpainting: "Inpainting"
 };
 
 function isVariant (value: string): value is ImageVariantType {
@@ -81,6 +83,7 @@ export const StableDiffusion = () => {
   const [variant, setVariant] = useLocalStorage<ImageVariantType>("AIImage_variant", "txt2img");
   const [steps, setSteps] = useLocalStorage("AIImage_steps", "30");
   const [prompt, setPrompt] = useLocalStorage("AIImage_prompt", "");
+  const [negative_prompt, setNegativePrompt] = useLocalStorage("AIImage_negative_prompt", "");
   const [model] = useLocalStorage("AIImage_model", "");
 
   const queue = useContext(queue_context);
@@ -99,19 +102,24 @@ export const StableDiffusion = () => {
     setPrompt(event.target.value); 
   };
 
+  const handleNegativePromptChange = (event: InputChangeEventType) => {
+    setNegativePrompt(event.target.value); 
+  };
+
   const handleGenerateClick = useCallback(() => {
     queue.addToQueue({
       type: "image",
       variant,
       model,
       prompt,
-      steps: +steps
+      steps: +steps,
+      negative_prompt
     });
     enqueueSnackbar({
       message: `Added to queue. Currently ${queue.length() + 1} elements in queue`,
       variant: "info"
     });
-  }, [variant, steps, prompt, queue]);
+  }, [variant, steps, prompt, queue, negative_prompt]);
 
   return (
     <Container>
@@ -141,6 +149,14 @@ export const StableDiffusion = () => {
           label="Prompt"
           value={prompt}
           onChange={handlePromptChange}
+        />
+      </Box>
+
+      <Box my={2}>
+        <TextField
+          label="Negative Prompt"
+          value={negative_prompt}
+          onChange={handleNegativePromptChange}
         />
       </Box>
 

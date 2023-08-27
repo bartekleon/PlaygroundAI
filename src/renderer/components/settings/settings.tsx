@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import { StableDiffusionSettings } from "./stableDiffusionSettings";
 import { CustomTabs } from "./components/customTabs";
 import { CustomTabPanel } from "./components/customTabPanel";
+import { AudioGenSettings } from "./audioGenSettings";
 
 export const Settings = () => {
   const [value, setValue] = React.useState(0);
@@ -10,7 +11,7 @@ export const Settings = () => {
   return (
     <Box sx={{ width: "100%" }}>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-        <CustomTabs value={value} setValue={setValue} tabs={["Image generation", "Item Two", "Item Three"]}/>
+        <CustomTabs value={value} setValue={setValue} tabs={["Image generation", "Audio generation", "Item Three"]}/>
       </Box>
 
       <CustomTabPanel value={value} index={0}>
@@ -18,7 +19,7 @@ export const Settings = () => {
       </CustomTabPanel>
 
       <CustomTabPanel value={value} index={1}>
-        Item Two
+        <AudioGenSettings />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
         Item Three

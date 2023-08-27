@@ -26,6 +26,7 @@ class ImageElement(TypedDict):
   variant: ImageVariant
   model: Path
   prompt: str
+  negative_prompt: str
   steps: int
 
 def image_to_b64(image):
@@ -81,6 +82,7 @@ class StableDiffusion(AIBase):
       
     output = cast(StableDiffusionPipelineOutput, self.model(
       prompt=settings['prompt'],
+      negative_prompt=settings['negative_prompt'],
       num_inference_steps=settings['steps'],
       callback=self._send_preview
     ))

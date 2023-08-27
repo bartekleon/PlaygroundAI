@@ -11,7 +11,7 @@ import {
   Box
 } from "@mui/material";
 import { useLocalStorage } from "../../utils/useLocalStorage";
-import type { MusicVariantType } from "interfaces/queue";
+import type { AudioGenModelType, MusicVariantType } from "interfaces/queue";
 import { useCallback, useContext } from "react";
 import { queue_context } from "../../queueManager";
 import { useSnackbar } from "notistack";
@@ -36,6 +36,7 @@ export const Music = () => {
   const [audio_length, setAudioLength] = useLocalStorage("AIMusic_length", "10");
   const [prompt, setPrompt] = useLocalStorage("AIMusic_prompt", "");
   const [audio_path, setAudioPath] = useLocalStorage("AIMusic_file", "");
+  const [model] = useLocalStorage<AudioGenModelType>("AIMusic_model", "melody");
 
   const queue = useContext(queue_context);
 
@@ -65,13 +66,14 @@ export const Music = () => {
       variant,
       audio_length: +audio_length,
       audio_path,
-      prompt
+      prompt,
+      model
     });
     enqueueSnackbar({
       message: `Added to queue. Currently ${queue.length() + 1} elements in queue`,
       variant: "info"
     });
-  }, [variant, audio_length, prompt, audio_path, queue]);
+  }, [variant, audio_length, prompt, audio_path, queue, model]);
 
   const is_music_variant = variant === "musicContinuation" || variant === "musicToMusic";
 
