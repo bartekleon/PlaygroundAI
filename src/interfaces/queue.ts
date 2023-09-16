@@ -21,6 +21,15 @@ export interface ImageElementType {
   steps: number;
 }
 
-export type QueueElementType = ImageElementType | MusicElementType;
+export interface ImageXLElementType {
+  type: "imagexl";
+  variant: ImageVariantType;
+  model: string;
+  prompt: string;
+  negative_prompt: string;
+  steps: number;
+}
+
+export type QueueElementType = ImageElementType | ImageXLElementType | MusicElementType;
 
 export type QueueType = QueueElementType[];

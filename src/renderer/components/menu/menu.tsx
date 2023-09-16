@@ -12,6 +12,7 @@ import TuneIcon from "@mui/icons-material/Tune";
 import GetAppIcon from "@mui/icons-material/GetApp";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import ImageIcon from "@mui/icons-material/Image";
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 
 import { AppBar, Drawer, DrawerHeader } from "./drawer";
 import { MiniDrawerListItem } from "./miniDrawerListItem";
@@ -58,6 +59,7 @@ export const MiniDrawer = () => {
         <Divider />
         <List>
           <MiniDrawerListItem open={is_open} icon={<ImageIcon />} text='stable diffusion' link='/stablediffusion' />
+          <MiniDrawerListItem open={is_open} icon={<AddPhotoAlternateIcon />} text='stable diffusion xl' link='/stablediffusionXL' />
           <MiniDrawerListItem open={is_open} icon={<MusicNoteIcon />} text='music' link='/music' />
         </List>
         <Divider />

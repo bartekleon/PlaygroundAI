@@ -4,6 +4,7 @@ from flask_socketio import SocketIO
 from typing import Dict
 
 from server.ai.base import AIBase
+from server.ai.stable_diffusionxl import ImageElementXL, StableDiffusionXL
 from server.exceptions.base import BaseError, exception_to_dict
 from server.ai.audio import AudioAI, MusicElement
 from server.ai.stable_diffusion import StableDiffusion, ImageElement
@@ -22,7 +23,8 @@ socketio = SocketIO(
 
 classes: Dict[str, AIBase] = {
   'music': AudioAI(socketio),
-  'image': StableDiffusion(socketio)
+  'image': StableDiffusion(socketio),
+  'imagexl': StableDiffusionXL(socketio)
 }
 
 @socketio.on('connect')
@@ -30,16 +32,16 @@ def connect():
   print('client has connected')
 
 @socketio.on('new_job')
-def new_job(data: ImageElement | MusicElement):
+def new_job(data: ImageElement | MusicElement | ImageElementXL):
   try:
     aiclass = classes.get(data['type'], None)
     assert aiclass
 
-    aiclass.generate(data)
-      
     for other_type, instance in classes.items():
       if other_type != data['type']:
         instance.destroy()
+
+    aiclass.generate(data)
 
   except BaseError as exc:
     # Expected errors, these are mostly fine
